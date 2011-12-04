@@ -1,0 +1,4 @@
+
+APP_ID   = 1234567123789123879      # Facebook App Id
+APP_CODE = 'abcdef123456790abcdef'  # Facebook app code
+SITE_URL = 'http://localhost:3000/' # Your app site url

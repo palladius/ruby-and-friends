@@ -3,33 +3,50 @@ APP_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 require 'rubygems'
 require 'sinatra'
 require 'koala'
+require 'socket'
+#require 'actionpack' #  action_view/helpers/text_helper.rb
+require 'action_view' #  action_view/helpers/text_helper.rb
+
+
+#include MyLibrary
 
 # register your app at facebook to get those infos
-APP_ID = 1234567890 # your app id
-APP_CODE = '76dhf8656a75...' # your app code
-SITE_URL = 'http://localhost:9393/' # your app site url
+require APP_ROOT + '/lib/my_facebook_app.rb' # configuration for your app
 
 class SimpleRubyFacebookExample < Sinatra::Application
 
 	include Koala
+	include ActionView::Helpers::TextHelper
+	include ActionView::Helpers::TagHelper
+	include ActionView::Helpers::FormHelper
 
 	set :root, APP_ROOT
 	enable :sessions
+	
+	def get_username(graph)
+	 graph.inspect rescue :boh
+	end
 
 	get '/' do
 		if session['access_token']
-		  'You are logged in! <a href="/logout">Logout</a>'
-			# do some stuff with facebook here
+		  # do some stuff with facebook here
 			# for example:
-			# @graph = Koala::Facebook::GraphAPI.new(session["access_token"])
+			@graph = Koala::Facebook::GraphAPI.new(session["access_token"])
 			# publish to your wall (if you have the permissions)
-			# @graph.put_wall_post("I'm posting from my new cool app!")
+			#@graph.put_wall_post("I'm posting from my new cool app!")
 			# or publish to someone else (if you have the permissions too ;) )
 			# @graph.put_wall_post("Checkout my new cool app!", {}, "someoneelse's id")
+			'You are logged in as <tt>'+ escape_once(get_username(@graph)) +'</tt>! <a href="/logout">Logout</a> <BR/> <a href="/post_on_wall">Post on uoll (attento!)</a>:'
 		else
 			'<a href="/login">Login</a>'
 		end
 	end
+
+  get '/post_on_wall' do
+    @graph = Koala::Facebook::GraphAPI.new(session["access_token"])
+    @graph.put_wall_post("I'm posting from my new cool app bella Ric From: #{ENV['USER']}@#{Socket.gethostname} on #{Time.now}")
+    "Curva mac! Wanna post on wall? Really sure? TODO nicknames (applica nicknames in database locale che matchino il tuo user)"
+  end
 
 	get '/login' do
 		# generate a new oauth object with your app data and your callback url
