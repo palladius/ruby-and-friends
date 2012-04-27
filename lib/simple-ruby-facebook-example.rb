@@ -77,6 +77,10 @@ class SimpleRubyFacebookExample < Sinatra::Application
   def html_page(str, opts={})
     header(opts) + str.to_s + footer(opts)
   end
+  
+  #before do
+  #  @graph = Koala::Facebook::GraphAPI.new(session["access_token"])
+  #end
 
   get '/post_on_other_persons_wall' do
     friend_id = params.fetch :friend_id, TEST_FRIEND_ID
@@ -89,9 +93,11 @@ class SimpleRubyFacebookExample < Sinatra::Application
   
   get '/friends' do
     html_page "It would be nice here to show your friends!!!<br/>
+    Friends:<br/>
     <a href='/friends/123'>John - Friend 123</a><br/>
     <a href='/friends/456'>Alice - Friend 456</a><br/>
-    
+    Graphs:<br/>
+    <a href='/graphs/palladius'>Palladius</a><br/>
     ", :title => 'Your Friends (TODO)'
   end
   
@@ -100,6 +106,12 @@ class SimpleRubyFacebookExample < Sinatra::Application
     @friend = Friend.find(params[:id]) rescue nil
     # using the params convention, you specified in your route
     html_page "#{@friend.inspect}", :title => "Friend #{id} TODO"
+  end
+  
+  get '/graphs/:name' do
+    @graph = Koala::Facebook::GraphAPI.new(session["access_token"])
+    username = @graph.get_object(params[:name])
+    html_page "<pre>#{username.map{|k,v| "#{k}: <B>#{v.inspect}</b><br/>"} }</pre>", :title => "Graph for #{username[:name]}"
   end
   
   get '/README' do
