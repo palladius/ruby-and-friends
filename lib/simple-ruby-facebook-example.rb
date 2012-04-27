@@ -22,7 +22,7 @@ class SimpleRubyFacebookExample < Sinatra::Application
   enable :sessions
 
   def get_username(graph)
-   graph.inspect rescue :boh
+   :TODO #graph.inspect rescue :boh
   end
 
   def log_info()
@@ -51,26 +51,31 @@ class SimpleRubyFacebookExample < Sinatra::Application
 	  "<img src='facebook.png'><a href='https://www.facebook.com/profile.php?id=#{id}' >#{msg}</a>"
   end
   def img(src,opts={})
-    "<img src='images/#{src}' height='20' >"
+    "<img src='/images/#{src}' height='20' >"
   end
-  def header()
-    "<center>[ 
+  def header(opts={})
+    @graph = Koala::Facebook::GraphAPI.new(session["access_token"])
+    session_info = if session['access_token'] then
+      'You are logged in as <tt>'+ escape_once(get_username(@graph)) +'</tt>! <a href="/logout">Logout</a>'
+    else
+      '<a href="/login">Login</a>'
+    end
+    
+    return "<center>[ 
       #{ img('home.png') }
       <a href=\"/\">Home</a>
-      <a href='/login' >Login</a>
       <a href='/friends' >Friends</a>
       <a href=\"/post_on_wall\">Post on YOUR uoll (BEWARE!)</a>
       <a href='/post_on_other_persons_wall?msg=ciao #{TEST_FRIEND_NAME}&friend_id=#{TEST_FRIEND_ID}' >Posting on '#{TEST_FRIEND_NAME}' wall</a>
-      <a href='/logout' >Logout</a>
-    ]</center> <h1>#{APPNAME}</h1>"
+    ] #{img('facebook.png')} #{session_info}</center> <h1>#{opts.fetch :title, APPNAME}</h1>"
   end
   
-  def footer()
+  def footer(opts={})
     "<hr/> #{img('riccardo.jpg')}<tt>Facebook mini app made in sinatra. See <a href='/README'>README</a></tt>"
   end
   
-  def html_page(str)
-    header() + str.to_s + footer()
+  def html_page(str, opts={})
+    header(opts) + str.to_s + footer(opts)
   end
 
   get '/post_on_other_persons_wall' do
@@ -83,13 +88,18 @@ class SimpleRubyFacebookExample < Sinatra::Application
   end
   
   get '/friends' do
-    html_page "It would be nice here to show your friends!!!"
+    html_page "It would be nice here to show your friends!!!<br/>
+    <a href='/friends/123'>John - Friend 123</a><br/>
+    <a href='/friends/456'>Alice - Friend 456</a><br/>
+    
+    ", :title => 'Your Friends (TODO)'
   end
   
   get '/friends/:id' do
-    # just get one dog, you might find him like this:
-    @dog = Friend.find(params[:id])
+    id = params[:id]
+    @friend = Friend.find(params[:id]) rescue nil
     # using the params convention, you specified in your route
+    html_page "#{@friend.inspect}", :title => "Friend #{id} TODO"
   end
   
   get '/README' do
