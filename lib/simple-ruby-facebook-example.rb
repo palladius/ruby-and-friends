@@ -9,6 +9,7 @@ require 'action_view' #  action_view/helpers/text_helper.rb
 
 # register your app at facebook to get those infos
 require APP_ROOT + '/lib/my_facebook_app.rb' # configuration for your app
+require APP_ROOT + '/lib/friend.rb'          # Facebook friend definition
 
 class SimpleRubyFacebookExample < Sinatra::Application
 
@@ -17,8 +18,6 @@ class SimpleRubyFacebookExample < Sinatra::Application
   include ActionView::Helpers::TagHelper
   include ActionView::Helpers::FormHelper
   
-  #@@ricFacebookFriend = '100000419195371' # Chiara Gennari
-
   set :root, APP_ROOT
   enable :sessions
 
@@ -40,23 +39,26 @@ class SimpleRubyFacebookExample < Sinatra::Application
 			# or publish to someone else (if you have the permissions too ;) )
 			
 			html_page('You are logged in as <tt>'+ escape_once(get_username(@graph)) +'</tt>!
-			<a href="/">Posting on Chiara wall</a>
 			<a href="/logout">Logout</a> <BR/>
-			<a href="/post_on_wall">Post on uoll (attento!)</a>:')
+			:')
 		else
 			html_page '<a href="/login">Login</a>'
 		end
 	end
 	
-	def fb_link_for(id)
-	  "FBLINK <a href='https://www.facebook.com/profile.php?id=#{id}' >Facebook Page of #{id} </a>"
+	def fb_link_for(id,msg=nil)
+	  msg ||= "Facebook Page of #{id}"
+	  "<img src='facebook.png'><a href='https://www.facebook.com/profile.php?id=#{id}' >#{msg}</a>"
   end
   
   def header()
     "<center>[ 
+      <img src='images/home.png' >
+      <a href=\"/\">Home</a>
       <a href='/login' >Login</a>
       <a href='/friends' >Friends</a>
-      <a href='/post_on_other_persons_wall?msg=ciao&friend_id=#{@@ricFacebookFriend}' >Posting on Chiara wall</a>
+      <a href=\"/post_on_wall\">Post on YOUR uoll (BEWARE!)</a>
+      <a href='/post_on_other_persons_wall?msg=ciao #{TEST_FRIEND_NAME}&friend_id=#{TEST_FRIEND_ID}' >Posting on '#{TEST_FRIEND_NAME}' wall</a>
       <a href='/logout' >Logout</a>
     ]</center> <h1>#{APPNAME}</h1>"
   end
@@ -69,17 +71,23 @@ class SimpleRubyFacebookExample < Sinatra::Application
     header() + str.to_s + footer()
   end
 
-  # @@ricFacebookFriend
   get '/post_on_other_persons_wall' do
-    friend_id = params.fetch :friend_id, @@ricFacebookFriend
-    msg = params.fetch 'msg', "default message"
+    friend_id = params.fetch :friend_id, TEST_FRIEND_ID
+    msg = params.fetch 'msg', "default hello #{TEST_FRIEND_NAME}"
     @graph = Koala::Facebook::GraphAPI.new(session["access_token"])
     @graph.put_wall_post("#{log_info}: #{msg}", {}, friend_id)
-    html_page "Message '#{msg}' correctly published on #{fb_link_for friend_id} wall. DEBUG:_ params are: #{params.inspect}"
+    html_page "Message '<b>#{msg}</b>' correctly published on #{TEST_FRIEND_NAME}'s wall: #{fb_link_for friend_id}. 
+    <BR/>DEBUG: params are: #{params.inspect}"
   end
   
   get '/friends' do
     html_page "It would be nice here to show your friends!!!"
+  end
+  
+  get '/friends/:id' do
+    # just get one dog, you might find him like this:
+    @dog = Friend.find(params[:id])
+    # using the params convention, you specified in your route
   end
   
   get '/README' do
