@@ -50,10 +50,12 @@ class SimpleRubyFacebookExample < Sinatra::Application
 	  msg ||= "Facebook Page of #{id}"
 	  "<img src='facebook.png'><a href='https://www.facebook.com/profile.php?id=#{id}' >#{msg}</a>"
   end
-  
+  def img(src,opts={})
+    "<img src='images/#{src}' height='20' >"
+  end
   def header()
     "<center>[ 
-      <img src='images/home.png' >
+      #{ img('home.png') }
       <a href=\"/\">Home</a>
       <a href='/login' >Login</a>
       <a href='/friends' >Friends</a>
@@ -64,7 +66,7 @@ class SimpleRubyFacebookExample < Sinatra::Application
   end
   
   def footer()
-    "<hr/> <tt>Facebook mini app made in sinatra. See <a href='/README'>README</a></tt>"
+    "<hr/> #{img('riccardo.jpg')}<tt>Facebook mini app made in sinatra. See <a href='/README'>README</a></tt>"
   end
   
   def html_page(str)
