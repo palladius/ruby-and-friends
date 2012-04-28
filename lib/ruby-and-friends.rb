@@ -8,7 +8,7 @@ require 'socket'
 require 'action_view' #  action_view/helpers/text_helper.rb
 
 # register your app at facebook to get those infos
-require APP_ROOT + '/lib/facebook_app.rb' # configuration for your app
+require APP_ROOT + '/lib/my_facebook_app_conf.rb' # configuration for your app
 require APP_ROOT + '/lib/friend.rb'          # Facebook friend definition
 
 =begin
@@ -25,7 +25,7 @@ class RubyAndFriends < Sinatra::Application
   include ActionView::Helpers::TagHelper
   include ActionView::Helpers::FormHelper
   
-  set :root, APP_ROOT
+  set    :root, APP_ROOT
   enable :sessions
 
   def get_username(graph)
@@ -35,28 +35,33 @@ class RubyAndFriends < Sinatra::Application
   def log_info()
     "#{ENV['USER']}@#{Socket.gethostname}"
   end
+  
+  # before do
+  #   MyStore.connect unless MyStore.connected?
+  # end
 
-	get '/' do
-		if session['access_token']
-		  # do some stuff with facebook here
-			# for example:
-			@graph = Koala::Facebook::GraphAPI.new(session["access_token"])
-			# publish to your wall (if you have the permissions)
-			#@graph.put_wall_post("I'm posting from my new cool app!")
-			# or publish to someone else (if you have the permissions too ;) )
-			
-			html_page('You are logged in as <tt>'+ escape_once(get_username(@graph)) +'</tt>!
-			<a href="/logout">Logout</a> <BR/>
-			:')
-		else
-			html_page '<a href="/login">Login</a>'
-		end
-	end
-	
-	def fb_link_for(id,msg=nil)
-	  msg ||= "Facebook Page of #{id}"
-	  "<img src='facebook.png'><a href='https://www.facebook.com/profile.php?id=#{id}' >#{msg}</a>"
+  get '/' do
+    if session['access_token']
+      # do some stuff with facebook here
+      # for example:
+      @graph = Koala::Facebook::GraphAPI.new(session["access_token"])
+      # publish to your wall (if you have the permissions)
+      #@graph.put_wall_post("I'm posting from my new cool app!")
+      # or publish to someone else (if you have the permissions too ;) )
+
+      html_page('You are logged in as <tt>'+ escape_once(get_username(@graph)) +'</tt>!
+      <a href="/logout">Logout</a> <BR/>
+      :')
+    else
+      html_page '<a href="/login">Login</a>'
+    end
   end
+
+  def fb_link_for(id,msg=nil)
+    msg ||= "Facebook Page of #{id}"
+    "<img src='facebook.png'><a href='https://www.facebook.com/profile.php?id=#{id}' >#{msg}</a>"
+  end
+  
   def img(src,opts={})
     "<img src='/images/#{src}' height='20' >"
   end
@@ -124,9 +129,9 @@ class RubyAndFriends < Sinatra::Application
   get '/graphs/:name' do
     @graph = Koala::Facebook::GraphAPI.new(session["access_token"])
     username = @graph.get_object(params[:name])
-    friend = Friend.new( @graph.get_object(params[:name]) )
+    friend = Friend.new( @graph , params[:name] )
     my_friends = @graph.get_connections('me','friends',:fields=>"name,gender,relationship_status")
-    
+    # #{:scope => 'publish_stream,offline_access,email,user_relationships,friends_relationships'}
     html_page "
     <h2>Friend #{friend}</h2>
     #{friend.html_name} : <br/>

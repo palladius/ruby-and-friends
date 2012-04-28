@@ -1,16 +1,28 @@
 # Facebook friend, built from graph hash...
 
+require 'rubygems'
+require 'sinatra'
+require 'koala'
 require 'action_view' #  action_view/helpers/text_helper.rb
 include ActionView::Helpers::TextHelper
 include ActionView::Helpers::TagHelper
 include ActionView::Helpers::FormHelper
 
+=begin
+
+  Tries to model a Facebook friend...
+
+=end
 class Friend
-  attr_accessor :fbhash
+  attr_accessor :fbhash, :graph, :username
+  # TODO memoize!
   
-  def initialize(hash)
-    puts "Friend class loaded!"
-    @fbhash = hash
+  def initialize(graph, username)
+    puts "Friend class loaded with graph: #{graph}!"
+    throw Exception("Sorry I need a @graph object, not a '#{graph.class}'") unless graph.class == Koala::Facebook::GraphAPI
+    @graph    =  graph  # original object
+    @username =  username  # original object
+    @fbhash   = graph.get_object(username) # hash
   end
   
   def html_name
@@ -22,6 +34,15 @@ class Friend
     
     <a href=''><font color='#{color}' >#{@fbhash['name']}</font></a>
     "
+  end
+  
+  #{:scope => 'publish_stream,offline_access,email,user_relationships,friends_relationships'}
+  def friends
+    :TODO
+  end
+  
+  def get_picture
+    @graph.get_picture(@username)
   end
   
   def to_html
