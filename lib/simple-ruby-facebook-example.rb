@@ -61,13 +61,19 @@ class SimpleRubyFacebookExample < Sinatra::Application
       '<a href="/login">Login</a>'
     end
     
+    friends_graph_addon = '{'+ FAVORITE_FRIENDS.map{ |username| "<a href='/graphs/#{username}'><tt>#{username}</tt></a> "}.join(' : ') + '}'
+    
     return "<center>[ 
       #{ img('home.png') }
       <a href=\"/\">Home</a>
       <a href='/friends' >Friends</a>
       <a href=\"/post_on_wall\">Post on YOUR uoll (BEWARE!)</a>
       <a href='/post_on_other_persons_wall?msg=ciao #{TEST_FRIEND_NAME}&friend_id=#{TEST_FRIEND_ID}' >Posting on '#{TEST_FRIEND_NAME}' wall</a>
-    ] #{img('facebook.png')} #{session_info}</center> <h1>#{opts.fetch :title, APPNAME}</h1>"
+    ] #{img('facebook.png')} #{session_info}</center> 
+    
+    #{friends_graph_addon}
+    
+    <h1>#{opts.fetch :title, APPNAME}</h1>"
   end
   
   def footer(opts={})
