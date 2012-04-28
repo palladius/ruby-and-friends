@@ -11,6 +11,13 @@ require 'action_view' #  action_view/helpers/text_helper.rb
 require APP_ROOT + '/lib/my_facebook_app.rb' # configuration for your app
 require APP_ROOT + '/lib/friend.rb'          # Facebook friend definition
 
+=begin
+  Docs:
+  
+  http://stackoverflow.com/questions/6976394/facebook-graph-api-koala-how-to-find-relationship-status-of-a-users-friend
+
+=end
+
 class SimpleRubyFacebookExample < Sinatra::Application
 
   include Koala
@@ -118,11 +125,16 @@ class SimpleRubyFacebookExample < Sinatra::Application
     @graph = Koala::Facebook::GraphAPI.new(session["access_token"])
     username = @graph.get_object(params[:name])
     friend = Friend.new( @graph.get_object(params[:name]) )
-    html_page "
+    my_friends = @graph.get_connections('me','friends',:fields=>"name,gender,relationship_status")
     
+    html_page "
     <h2>Friend #{friend}</h2>
     #{friend.html_name} : <br/>
     #{friend.to_html}
+    
+    <h2>My friends</h2>
+    #{my_friends.inspect}
+    
     ", :title => "Graph for #{username['name']}"
   end
   
@@ -137,25 +149,25 @@ class SimpleRubyFacebookExample < Sinatra::Application
     TODO nicknames (applica nicknames in database locale che matchino il tuo user)"
   end
 
-	get '/login' do
-		# generate a new oauth object with your app data and your callback url
-		session['oauth'] = Facebook::OAuth.new(APP_ID, APP_CODE, SITE_URL + 'callback')
-		# redirect to facebook to get your code
-		redirect session['oauth'].url_for_oauth_code()
-	end
+  get '/login' do
+    # generate a new oauth object with your app data and your callback url
+    session['oauth'] = Facebook::OAuth.new(APP_ID, APP_CODE, SITE_URL + 'callback')
+    # redirect to facebook to get your code
+    redirect session['oauth'].url_for_oauth_code()
+  end
 
-	get '/logout' do
-		session['oauth'] = nil
-		session['access_token'] = nil
-		redirect '/'
-	end
+  get '/logout' do
+    session['oauth'] = nil
+    session['access_token'] = nil
+    redirect '/'
+  end
 
-	#method to handle the redirect from facebook back to you
-	get '/callback' do
-		#get the access token from facebook with your code
-		session['access_token'] = session['oauth'].get_access_token(params[:code])
-		redirect '/'
-	end
+  #method to handle the redirect from facebook back to you
+  get '/callback' do
+    #get the access token from facebook with your code
+    session['access_token'] = session['oauth'].get_access_token(params[:code])
+    redirect '/'
+  end
 
 end
 
