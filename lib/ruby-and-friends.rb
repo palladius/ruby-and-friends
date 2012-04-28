@@ -8,7 +8,7 @@ require 'socket'
 require 'action_view' #  action_view/helpers/text_helper.rb
 
 # register your app at facebook to get those infos
-require APP_ROOT + '/lib/my_facebook_app.rb' # configuration for your app
+require APP_ROOT + '/lib/facebook_app.rb' # configuration for your app
 require APP_ROOT + '/lib/friend.rb'          # Facebook friend definition
 
 =begin
@@ -18,7 +18,7 @@ require APP_ROOT + '/lib/friend.rb'          # Facebook friend definition
 
 =end
 
-class SimpleRubyFacebookExample < Sinatra::Application
+class RubyAndFriends < Sinatra::Application
 
   include Koala
   include ActionView::Helpers::TextHelper
