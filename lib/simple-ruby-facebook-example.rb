@@ -117,7 +117,13 @@ class SimpleRubyFacebookExample < Sinatra::Application
   get '/graphs/:name' do
     @graph = Koala::Facebook::GraphAPI.new(session["access_token"])
     username = @graph.get_object(params[:name])
-    html_page "<pre>#{username.map{|k,v| "#{k}: <B>#{v.inspect}</b><br/>"} }</pre>", :title => "Graph for #{username[:name]}"
+    friend = Friend.new( @graph.get_object(params[:name]) )
+    html_page "
+    
+    <h2>Friend #{friend}</h2>
+    #{friend.html_name} : <br/>
+    #{friend.to_html}
+    ", :title => "Graph for #{username['name']}"
   end
   
   get '/README' do
