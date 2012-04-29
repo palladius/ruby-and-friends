@@ -1,0 +1,28 @@
+<%
+  session_info = if session['access_token'] then
+    erb :"_logged_in.html"
+  else
+    erb :"_not_logged_in.html"
+  end
+  opts = settings.opts
+%>
+
+<div class="header" >
+<center>
+ <%= img('home.png') %>
+ <a href=\"/\">Home</a>
+ <a href='/friends' >Friends</a>
+ <a href='/myfriends/' >MyFriends</a>
+ <a href='/index' >Index</a>
+ <a href='/me' >Me</a>
+ <a href=\"/post_on_wall\">Post on YOUR uoll</a>
+ <a href='/post_on_other_persons_wall?msg=ciao <%= TEST_FRIEND_NAME %>&friend_id=<%=TEST_FRIEND_ID %>' >Posting on '<%= TEST_FRIEND_NAME %>' wall</a>
+] <%= img('facebook.png') %> 
+
+<%= session_info %>
+
+</center> 
+</div>
+opts = <%= opts.inspect %>
+
+  <h1><%= opts.fetch(:title, APPNAME) %></h1>

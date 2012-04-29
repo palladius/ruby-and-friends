@@ -1,0 +1,8 @@
+<hr/>
+<center> Some of your friends:
+  <%= FAVORITE_FRIENDS.map{ |username| "<a href='/graphs/#{username}'><tt>#{username}</tt></a> "}.join(' :: ')  %>
+</center>
+<br />
+ session["access_token"] = <%= session["access_token"] %>
+ Application developer by Riccardo Carlesso
+<%= img('riccardo.jpg') %> <tt>Facebook mini app made in sinatra. See <a href='/README'>README</a></tt>"

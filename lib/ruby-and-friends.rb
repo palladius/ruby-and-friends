@@ -88,12 +88,15 @@ class RubyAndFriends < Sinatra::Application
     <h1>#{opts.fetch :title, APPNAME}</h1>"
   end
   
-  def footer(opts={})
-    "<hr/> #{img('riccardo.jpg')}<tt>Facebook mini app made in sinatra. See <a href='/README'>README</a></tt>"
-  end
+  #def footer(opts={})
+  #  "<hr/> #{img('riccardo.jpg')}<tt>Facebook mini app made in sinatra. See <a href='/README'>README</a></tt>"
+  #end
   
   def html_page(str, opts={})
-    header(opts) + str.to_s + footer(opts)
+    set :opts, opts
+    erb(:'header.html') + 
+      str.to_s + 
+      erb(:'footer.html').to_s # (opts)
   end
   
   # before any GET, it initializes the GRAPH object
@@ -110,7 +113,7 @@ class RubyAndFriends < Sinatra::Application
       <h1>About Me</h1>
         #{ @graph.get_object("me").inspect }     
       <h2>Feeds</h2>
-        #{ @graph.get_connections('me', 'feed') }
+        #{ @graph.get_connections('me', 'feed').inspect }
       "
   end
 
@@ -123,13 +126,16 @@ class RubyAndFriends < Sinatra::Application
   end
   
   get '/friends' do
-    html_page "It would be nice here to show your friends!!!<br/>
-    Friends:<br/>
-    <a href='/friends/123'>John - Friend 123</a><br/>
-    <a href='/friends/456'>Alice - Friend 456</a><br/>
-    Graphs:<br/>
-    <a href='/graphs/palladius'>Palladius</a><br/>
-    ", :title => 'Your Friends'
+    #friend_list = @graph.get_connections('me','friends',:fields=>"name,gender,relationship_status")
+    set :friend_list, @graph.get_connections('me','friendlists') # ,:fields=>"name,gender,relationship_status")
+    erb :'friends.html'
+    # html_page "It would be nice here to show your friends!!!<br/>
+    # Friends:<br/>
+    # <a href='/friends/123'>John - Friend 123</a><br/>
+    # <a href='/friends/456'>Alice - Friend 456</a><br/>
+    # Graphs:<br/>
+    # <a href='/graphs/palladius'>Palladius</a><br/>
+    # ", :title => 'Your Friends'
   end
   
   get '/friends/:id' do
@@ -182,7 +188,7 @@ class RubyAndFriends < Sinatra::Application
     friends_page = my_friends.first(MAX_FRIENDS).map{|friend_hash| 
       tmp += friend_partial(friend_hash) 
     }
-    html_page "    <h2>My friends (max #{MAX_FRIENDS})</h2>    #{tmp}", :title => "Your friends"
+    html_page "<h2>My friends (max #{MAX_FRIENDS})</h2>    #{tmp}", :title => "MyFriends"
   end
   
   get '/README' do

@@ -1,0 +1,20 @@
+
+<h2> Friend list</h2>
+
+It would be nice here to show your friends!!!<br/>
+
+<ul>
+<% settings.friend_list.sort{|a,b| a['name'] <=> b['name'] }.each do |hash| %>
+  <li class='<%= hash['list_type'] %>' >
+	<b><%= hash['name'] %></b> 
+	<small><%= hash.inspect %></small>
+  </li>
+<% end %>
+</ul>
+<h2> Test</h2>
+
+Friends:<br/>
+<a href='/friends/123'>John - Friend 123</a><br/>
+<a href='/friends/456'>Alice - Friend 456</a><br/>
+Graphs:<br/>
+<a href='/graphs/palladius'>Palladius</a><br/>
