@@ -171,6 +171,9 @@ class RubyAndFriends < Sinatra::Application
   def friend_partial(friend_hash)
     color = friend_hash['gender'] == 'male' ? 'darkcyan' : 'darksalmon'
     color = 'gray' unless friend_hash['gender'].to_s =~ /ale$/ # male or female
+    set :graph, @graph
+    set :friend_hash, friend_hash
+    return erb :_friend
     uninteresting_fields = %w{id name}
     "- 
     <img src='#{ @graph.get_picture('me') }' height='30' />
