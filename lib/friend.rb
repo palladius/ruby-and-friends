@@ -36,13 +36,27 @@ class Friend
     "
   end
   
+  def fb_id
+    @fbhash['id']
+  end
+  
+  def username
+    @fbhash['username']
+  end
+  
   #{:scope => 'publish_stream,offline_access,email,user_relationships,friends_relationships'}
   def friends
     :TODO
   end
   
+  # @graph.get_picture(username) rescue "Err: #{$!}"
   def get_picture
     @graph.get_picture(@username)
+  end
+  
+  def img(opts={})
+    height=opts.fetch :height, 100
+    "<img src='#{get_picture}' height='#{height}' />"
   end
   
   def to_html
