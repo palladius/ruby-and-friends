@@ -49,9 +49,10 @@ class RubyAndFriends < Sinatra::Application
       #@graph.put_wall_post("I'm posting from my new cool app!")
       # or publish to someone else (if you have the permissions too ;) )
 
-      html_page('You are logged in as <tt>'+ escape_once(get_username(@graph)) +'</tt>!
-      <a href="/logout">Logout</a> <BR/>
-      :')
+      html_page('You are logged in as <tt>'+ escape_once(get_username(@graph)) +'</tt>!' +
+      "<img src='#{ @graph.get_picture('palladius') }' height='30' />" +
+      "<a href=\"/logout\">Logout</a> <BR/>
+      :")
     else
       html_page '<a href="/login">Login</a>'
     end
@@ -79,7 +80,8 @@ class RubyAndFriends < Sinatra::Application
       #{ img('home.png') }
       <a href=\"/\">Home</a>
       <a href='/friends' >Friends</a>
-      <a href=\"/post_on_wall\">Post on YOUR uoll (BEWARE!)</a>
+      <a href='/index' >Index</a>
+      <a href=\"/post_on_wall\">Post on YOUR uoll</a>
       <a href='/post_on_other_persons_wall?msg=ciao #{TEST_FRIEND_NAME}&friend_id=#{TEST_FRIEND_ID}' >Posting on '#{TEST_FRIEND_NAME}' wall</a>
     ] #{img('facebook.png')} #{session_info}</center> 
     
@@ -96,9 +98,16 @@ class RubyAndFriends < Sinatra::Application
     header(opts) + str.to_s + footer(opts)
   end
   
-  #before do
-  #  @graph = Koala::Facebook::GraphAPI.new(session["access_token"])
-  #end
+  before do
+    #@graph = Koala::Facebook::GraphAPI.new(session["access_token"])
+    @graph = Koala::Facebook::GraphAPI.new(session["access_token"])
+  end
+  
+  get '/me' do
+    @result = @graph.get_connections('me', 'feed')
+    html_page "<h1>About Me</h1>" +
+    :TODO
+  end
 
   get '/post_on_other_persons_wall' do
     friend_id = params.fetch :friend_id, TEST_FRIEND_ID
@@ -127,10 +136,10 @@ class RubyAndFriends < Sinatra::Application
   end
   
   get '/graphs/:name' do
-    @graph = Koala::Facebook::GraphAPI.new(session["access_token"])
+    #@graph = Koala::Facebook::GraphAPI.new(session["access_token"])
     username = @graph.get_object(params[:name])
     friend = Friend.new( @graph , params[:name] )
-    my_friends = @graph.get_connections('me','friends',:fields=>"name,gender,relationship_status")
+    #my_friends = @graph.get_connections('me','friends',:fields=>"name,gender,relationship_status")
     # #{:scope => 'publish_stream,offline_access,email,user_relationships,friends_relationships'}
     html_page "
     <h2>Friend #{friend}</h2>
@@ -138,13 +147,50 @@ class RubyAndFriends < Sinatra::Application
     #{friend.to_html}
     
     <h2>My friends</h2>
-    #{my_friends.inspect}
+    <a href='/myfriends/'>My friends</a>
     
     ", :title => "Graph for #{username['name']}"
   end
   
+  def fblink(id)
+    "http://www.facebook.com/#{id}"
+  end
+  
+  # TODO in ERB
+  def friend_partial(friend_hash)
+    color = friend_hash['gender'] == 'male' ? 'darkcyan' : 'darksalmon'
+    "- 
+    <img src='#{ @graph.get_picture('palladius') }' height='30' />
+    <img src='#{ @graph.get_picture(friend_hash['id'] ) }' height='30' />
+    
+      <a href='#{fblink(friend_hash['id'])}'>
+        <font color='#{color}'>
+          #{friend_hash['name']}
+        </font>
+      </a> - 
+      <small>#{friend_hash.delete_if{ |k,v| %w{id gender name}.include?(k)  }.inspect}</small> <br/>"
+  end
+  
+  get '/myfriends/' do
+    MAX_FRIENDS = 20
+    my_friends = @graph.get_connections('me','friends',:fields=>"name,gender,relationship_status")
+    tmp = ''
+    friends_page = my_friends.first(MAX_FRIENDS).map{|friend_hash| 
+      tmp += friend_partial(friend_hash) 
+    }
+    html_page "
+    <h2>My friends (max #{MAX_FRIENDS})</h2>
+    #{tmp}    
+    ", :title => "Your friends"
+    
+  end
+  
   get '/README' do
     html_page( "<pre>" + File.read(APP_ROOT + "/README") + "</pre>" )
+  end
+  
+  get '/index' do
+    erb 'index.html'
   end
   
   get '/post_on_wall' do
