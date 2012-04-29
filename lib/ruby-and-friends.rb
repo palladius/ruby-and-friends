@@ -37,15 +37,9 @@ class RubyAndFriends < Sinatra::Application
     "#{ENV['USER']}@#{Socket.gethostname}"
   end
   
-  # before do
-  #   MyStore.connect unless MyStore.connected?
-  # end
-
   get '/' do
     if session['access_token']
-      # do some stuff with facebook here
       # for example:
-      @graph = Koala::Facebook::GraphAPI.new(session["access_token"])
       # publish to your wall (if you have the permissions)
       #@graph.put_wall_post("I'm posting from my new cool app!")
       # or publish to someone else (if you have the permissions too ;) )
@@ -68,7 +62,7 @@ class RubyAndFriends < Sinatra::Application
     "<img src='/images/#{src}' height='20' >"
   end
   def header(opts={})
-    @graph = Koala::Facebook::GraphAPI.new(session["access_token"])
+    #@graph = Koala::Facebook::GraphAPI.new(session["access_token"])
     session_info = if session['access_token'] then
       'You are logged in as <tt>'+ escape_once(get_username(@graph)) +'</tt>! '+
       "<img src='#{ @graph.get_picture('me') }' height='50' />" +
@@ -83,7 +77,7 @@ class RubyAndFriends < Sinatra::Application
       #{ img('home.png') }
       <a href=\"/\">Home</a>
       <a href='/friends' >Friends</a>
-      <a href='/myfriends' >MyFriends</a>
+      <a href='/myfriends/' >MyFriends</a>
       <a href='/index' >Index</a>
       <a href='/me' >Me</a>
       <a href=\"/post_on_wall\">Post on YOUR uoll</a>
@@ -104,7 +98,8 @@ class RubyAndFriends < Sinatra::Application
   end
   
   before do
-    @graph = Koala::Facebook::GraphAPI.new(session["access_token"])
+    #@graph = Koala::Facebook::GraphAPI.new(session["access_token"]) # pre 1.2beta
+    @graph = Koala::Facebook::API.new(session["access_token"])     # 1.2beta and beyond
   end
   
   get '/me' do
@@ -121,7 +116,6 @@ class RubyAndFriends < Sinatra::Application
   get '/post_on_other_persons_wall' do
     friend_id = params.fetch :friend_id, TEST_FRIEND_ID
     msg = params.fetch 'msg', "default hello #{TEST_FRIEND_NAME}"
-    @graph = Koala::Facebook::GraphAPI.new(session["access_token"])
     @graph.put_wall_post("#{log_info}: #{msg}", {}, friend_id)
     html_page "Message '<b>#{msg}</b>' correctly published on #{TEST_FRIEND_NAME}'s wall: #{fb_link_for friend_id}. 
     <BR/>DEBUG: params are: #{params.inspect}"
@@ -145,7 +139,6 @@ class RubyAndFriends < Sinatra::Application
   end
   
   get '/graphs/:name' do
-    #@graph = Koala::Facebook::GraphAPI.new(session["access_token"])
     username = @graph.get_object(params[:name])
     friend = Friend.new( @graph , params[:name] )
     #friend_id = friend.id
@@ -156,15 +149,17 @@ class RubyAndFriends < Sinatra::Application
     <h2>Friend #{friend}</h2>
     #{friend.html_name} : <br/>
     #{friend.to_html}
-    <h2>Mutual friends for #{friend.id}</h2>
+    <h2>Mutual friends for #{friend.fb_id}</h2>
     
-    #{ @graph.get_connections("me", "mutualfriends/#{friend.fb_id}").inspect }
+    #{ @graph.get_connections("me", "mutualfriends/#{friend.fb_id}").first(10).map{|hash| 
+      friend_partial(hash) # .inspect 
+      }.join(' ') 
+    }
     
     <h2>Likes</h2>
     
-    #{ @graph.get_connections(friend.username, "likes") }
+    #{ @graph.get_connections(friend.fb_id, "likes").first(10).inspect }
     
-
     ", :title => "Graph for #{username['name']}"
   end
   
@@ -175,8 +170,10 @@ class RubyAndFriends < Sinatra::Application
   # TODO in ERB: _friend.erb
   def friend_partial(friend_hash)
     color = friend_hash['gender'] == 'male' ? 'darkcyan' : 'darksalmon'
+    color = 'gray' unless friend_hash['gender'].to_s =~ /ale$/ # male or female
+    uninteresting_fields = %w{id name}
     "- 
-    <img src='#{ @graph.get_picture(TEST_FRIEND_ID) }' height='30' />
+    <img src='#{ @graph.get_picture('me') }' height='30' />
     <img src='#{ @graph.get_picture(friend_hash['id'] ) }' height='30' />
     
       <a href='#{fblink(friend_hash['id'])}'>
@@ -184,21 +181,19 @@ class RubyAndFriends < Sinatra::Application
           #{friend_hash['name']}
         </font>
       </a> - 
-      <small>#{friend_hash.delete_if{ |k,v| %w{id gender name}.include?(k)  }.inspect}</small> <br/>"
+      <small>#{friend_hash.delete_if{ |k,v| uninteresting_fields.include?(k)  }.inspect}</small> <br/>
+      #{ erb :_friend }
+      "
   end
   
   get '/myfriends/' do
-    MAX_FRIENDS = 20
+    MAX_FRIENDS = 10
     my_friends = @graph.get_connections('me','friends',:fields=>"name,gender,relationship_status")
     tmp = ''
     friends_page = my_friends.first(MAX_FRIENDS).map{|friend_hash| 
       tmp += friend_partial(friend_hash) 
     }
-    html_page "
-    <h2>My friends (max #{MAX_FRIENDS})</h2>
-    #{tmp}    
-    ", :title => "Your friends"
-    
+    html_page "    <h2>My friends (max #{MAX_FRIENDS})</h2>    #{tmp}", :title => "Your friends"
   end
   
   get '/README' do
@@ -210,7 +205,6 @@ class RubyAndFriends < Sinatra::Application
   end
   
   get '/post_on_wall' do
-    @graph = Koala::Facebook::GraphAPI.new(session["access_token"])
     @graph.put_wall_post("I'm posting from my new cool app bella Ric From: #{log_info}")
     html_page "Curva mac! Wanna post on wall? Really sure? 
     TODO nicknames (applica nicknames in database locale che matchino il tuo user)"

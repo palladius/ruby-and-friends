@@ -18,8 +18,9 @@ class Friend
   # TODO memoize!
   
   def initialize(graph, username)
-    puts "Friend class loaded with graph: #{graph}!"
-    throw Exception("Sorry I need a @graph object, not a '#{graph.class}'") unless graph.class == Koala::Facebook::GraphAPI
+    #puts "Friend class loaded with graph: #{graph}!"
+    #throw ("Sorry I need a @graph object, not a '#{graph.class}'") unless graph.class == Koala::Facebook::GraphAPI
+    throw "Sorry I need a @graph object, not a '#{graph.class}'" unless graph.class == Koala::Facebook::API
     @graph    =  graph  # original object
     @username =  username  # original object
     @fbhash   = graph.get_object(username) # hash
