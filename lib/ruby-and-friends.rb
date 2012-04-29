@@ -62,7 +62,6 @@ class RubyAndFriends < Sinatra::Application
     "<img src='/images/#{src}' height='20' >"
   end
   def header(opts={})
-    #@graph = Koala::Facebook::GraphAPI.new(session["access_token"])
     session_info = if session['access_token'] then
       'You are logged in as <tt>'+ escape_once(get_username(@graph)) +'</tt>! '+
       "<img src='#{ @graph.get_picture('me') }' height='50' />" +
@@ -97,9 +96,11 @@ class RubyAndFriends < Sinatra::Application
     header(opts) + str.to_s + footer(opts)
   end
   
+  # before any GET, it initializes the GRAPH object
   before do
     #@graph = Koala::Facebook::GraphAPI.new(session["access_token"]) # pre 1.2beta
     @graph = Koala::Facebook::API.new(session["access_token"])     # 1.2beta and beyond
+    @graph = Koala::Facebook::API.new(SUPER_TOKEN) if SUPER_TOKEN
   end
   
   get '/me' do
@@ -169,24 +170,9 @@ class RubyAndFriends < Sinatra::Application
   
   # TODO in ERB: _friend.erb
   def friend_partial(friend_hash)
-    color = friend_hash['gender'] == 'male' ? 'darkcyan' : 'darksalmon'
-    color = 'gray' unless friend_hash['gender'].to_s =~ /ale$/ # male or female
     set :graph, @graph
     set :friend_hash, friend_hash
     return erb :_friend
-    uninteresting_fields = %w{id name}
-    "- 
-    <img src='#{ @graph.get_picture('me') }' height='30' />
-    <img src='#{ @graph.get_picture(friend_hash['id'] ) }' height='30' />
-    
-      <a href='#{fblink(friend_hash['id'])}'>
-        <font color='#{color}'>
-          #{friend_hash['name']}
-        </font>
-      </a> - 
-      <small>#{friend_hash.delete_if{ |k,v| uninteresting_fields.include?(k)  }.inspect}</small> <br/>
-      #{ erb :_friend }
-      "
   end
   
   get '/myfriends/' do

@@ -5,6 +5,8 @@ APP_ID   = 125754150824335 # Localhost3000 Riccardo
 APP_CODE = 'abb0272644d4bef5577b07e72a958784' # your app code
 SITE_URL = 'http://localhost:3000/' # your app site url
 APPNAME  = "Riccardo Facebook test"
+# You dont have to have it. If you do, you can see more stuff, depending on what you enabled with this token.
+SUPER_TOKEN = nil
 
 TEST_FRIEND_ID   = '100000419195371'      # Chiara Gennari
 TEST_FRIEND_NAME = 'Chiara G.'

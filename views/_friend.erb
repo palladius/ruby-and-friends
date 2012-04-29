@@ -1,20 +1,23 @@
 <%
-#set :graph, @graph
-#set :friend_hash, friend_hash
-#TODO _friend < % = settings.friend_hash.inspect % >
+  #set :graph, @graph
+  #set :friend_hash, friend_hash
   uninteresting_fields = %w{id name}
+  # Sinatra passes vars into 'SETTINGS'
+  friend_hash = settings.friend_hash
+  @graph      = settings.graph
+  color = friend_hash['gender'] == 'male' ? 'darkcyan' : 'darksalmon'
+  color = 'gray' unless friend_hash['gender'].to_s =~ /ale$/ # male or female
 %>
-<h6>erb friend</h6>
-<img src='<%= @graph.get_picture('me') %>'               height='30' />
-<img src='<%= @graph.get_picture(friend_hash['id'] ) %>' height='30' />
-
-  <a href='#{fblink(friend_hash['id'])}'>
+<div class='erb_friend' >
+  <img src='<%= @graph.get_picture('me') %>'               height='30' />
+  <img src='<%= @graph.get_picture(friend_hash['id'] ) %>' height='30' />
+  <a href='<%= fblink(friend_hash['id']) %>'>
     <font color='#{color}'>
       <%= friend_hash['name'] %>
     </font>
   </a> - 
   <small>
-	#{friend_hash.delete_if{ |k,v| uninteresting_fields.include?(k)  }.inspect}
+    <%= friend_hash.delete_if{ |k,v| uninteresting_fields.include?(k)  }.inspect %>
   </small> 
-
   <br/>
+</div>
