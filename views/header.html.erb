@@ -4,7 +4,7 @@
   else
     erb :"_not_logged_in.html"
   end
-  opts = settings.opts
+  opts = settings.opts rescue {}
 %>
 
 <div class="header" >
@@ -23,6 +23,5 @@
 
 </center> 
 </div>
-opts = <%= opts.inspect %>
 
   <h1><%= opts.fetch(:title, APPNAME) %></h1>

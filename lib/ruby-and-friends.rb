@@ -61,36 +61,6 @@ class RubyAndFriends < Sinatra::Application
   def img(src,opts={})
     "<img src='/images/#{src}' height='20' >"
   end
-  def header(opts={})
-    session_info = if session['access_token'] then
-      'You are logged in as <tt>'+ escape_once(get_username(@graph)) +'</tt>! '+
-      "<img src='#{ @graph.get_picture('me') }' height='50' />" +
-      '<a href="/logout">Logout</a>'
-    else
-      '<a href="/login">Login</a>'
-    end
-    
-    friends_graph_addon = '{'+ FAVORITE_FRIENDS.map{ |username| "<a href='/graphs/#{username}'><tt>#{username}</tt></a> "}.join(' : ') + '}'
-    
-    return "<center>[ 
-      #{ img('home.png') }
-      <a href=\"/\">Home</a>
-      <a href='/friends' >Friends</a>
-      <a href='/myfriends/' >MyFriends</a>
-      <a href='/index' >Index</a>
-      <a href='/me' >Me</a>
-      <a href=\"/post_on_wall\">Post on YOUR uoll</a>
-      <a href='/post_on_other_persons_wall?msg=ciao #{TEST_FRIEND_NAME}&friend_id=#{TEST_FRIEND_ID}' >Posting on '#{TEST_FRIEND_NAME}' wall</a>
-    ] #{img('facebook.png')} #{session_info}</center> 
-    
-    #{friends_graph_addon}
-    
-    <h1>#{opts.fetch :title, APPNAME}</h1>"
-  end
-  
-  #def footer(opts={})
-  #  "<hr/> #{img('riccardo.jpg')}<tt>Facebook mini app made in sinatra. See <a href='/README'>README</a></tt>"
-  #end
   
   def html_page(str, opts={})
     set :opts, opts
@@ -128,7 +98,9 @@ class RubyAndFriends < Sinatra::Application
   get '/friends' do
     #friend_list = @graph.get_connections('me','friends',:fields=>"name,gender,relationship_status")
     set :friend_list, @graph.get_connections('me','friendlists') # ,:fields=>"name,gender,relationship_status")
-    erb :'friends.html'
+    erb :'friends.html', :layout => :ric_layout
+    #erb :index, :layout => :post
+    
     # html_page "It would be nice here to show your friends!!!<br/>
     # Friends:<br/>
     # <a href='/friends/123'>John - Friend 123</a><br/>
