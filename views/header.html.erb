@@ -10,18 +10,19 @@
 <div class="header" >
 <center>
  <%= img('home.png') %>
- <a href=\"/\">Home</a>
+ <a href='/' >Home</a>
  <a href='/friends' >Friends</a>
  <a href='/myfriends/' >MyFriends</a>
  <a href='/index' >Index</a>
  <a href='/me' >Me</a>
- <a href=\"/post_on_wall\">Post on YOUR uoll</a>
- <a href='/post_on_other_persons_wall?msg=ciao <%= TEST_FRIEND_NAME %>&friend_id=<%=TEST_FRIEND_ID %>' >Posting on '<%= TEST_FRIEND_NAME %>' wall</a>
+ <a href=\"/post_on_wall\">Post on wall</a>
+ <a href='/post_on_other_persons_wall?msg=ciao <%= TEST_FRIEND_NAME %>&friend_id=<%=TEST_FRIEND_ID %>' >Post on '<%= TEST_FRIEND_NAME %>' wall</a>
 ] <%= img('facebook.png') %> 
 
 <%= session_info %>
 
 </center> 
 </div>
-
-  <h1><%= opts.fetch(:title, APPNAME) %></h1>
+<% if opts.fetch :title, nil %>
+  <h1><%= opts[:title] %></h1>
+<% end %>

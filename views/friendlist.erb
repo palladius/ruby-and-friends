@@ -1,0 +1,15 @@
+<% 
+	this_friendlist = @graph.get_object(id)
+	members = @graph.get_object("#{id}/members")
+%>
+
+<H1>FriendList <u><%= this_friendlist['name'] rescue id %></u></H1>
+
+<%= this_friendlist.inspect %>
+
+<h2>Members</h2>
+<% members.each do |friend_hash| 
+	set :friend_hash, friend_hash
+%>
+  <li><%= erb :_friend %></li>
+<% end %>

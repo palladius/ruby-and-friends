@@ -1,17 +1,7 @@
+<a href='/friendlists/'>Friends List</a>
 
-<h2> Friend list</h2>
+<h2>Friends Test</h2>
 
-It would be nice here to show your friends!!! If this is empty, it means your token is not powerful enough..<br/>
-
-<ul>
-<% settings.friend_list.sort{|a,b| a['name'] <=> b['name'] }.each do |hash| %>
-  <li class='<%= hash['list_type'] %>' >
-	<b><%= hash['name'] %></b> 
-	<small><%= hash.inspect %></small>
-  </li>
-<% end %>
-</ul>
-<h2> Test</h2>
 
 Friends:<br/>
 <a href='/friends/123'>John - Friend 123</a><br/>

@@ -1,0 +1,7 @@
+<%# hash = settings.hash rescue { :err => $! } %>
+<li class='<%= hash['list_type'] rescue :boh %>' >
+	<b><a href='/friendlists/<%= hash['id'] %>'>
+	 <%= hash['name'] rescue :mah %>
+	</a></b> 
+	<small><%= hash.inspect %></small>
+</li>

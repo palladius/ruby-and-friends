@@ -4,14 +4,15 @@
   uninteresting_fields = %w{id name}
   # Sinatra passes vars into 'SETTINGS'
   friend_hash = settings.friend_hash
-  @graph      = settings.graph
+  @graph      ||= settings.graph
   color = friend_hash['gender'] == 'male' ? 'darkcyan' : 'darksalmon'
   color = 'gray' unless friend_hash['gender'].to_s =~ /ale$/ # male or female
 %>
 <div class='erb_friend' >
   <img src='<%= @graph.get_picture('me') %>'               height='30' />
   <img src='<%= @graph.get_picture(friend_hash['id'] ) %>' height='30' />
-  <a href='<%= fblink(friend_hash['id']) %>'>
+  <a href='<%= fblink(friend_hash['id']) %>'>FB</a> 
+  <a href='/graphs/<%= friend_hash['id'] %>'>
     <font color='#{color}'>
       <%= friend_hash['name'] %>
     </font>

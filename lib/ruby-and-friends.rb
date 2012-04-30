@@ -66,7 +66,7 @@ class RubyAndFriends < Sinatra::Application
     set :opts, opts
     erb(:'header.html') + 
       str.to_s + 
-      erb(:'footer.html').to_s # (opts)
+      erb(:'footer.html')
   end
   
   # before any GET, it initializes the GRAPH object
@@ -95,36 +95,35 @@ class RubyAndFriends < Sinatra::Application
     <BR/>DEBUG: params are: #{params.inspect}"
   end
   
+  get '/friendlists/:id' do
+    id = params[:id]
+    #hash = @graph.get_connections('me',id)
+    erb :friendlist, :layout => :ric_layout, :locals => {:id => id } # , :hash => :hash}
+  end
+  
+  get '/friendlists/' do
+    set :friend_list, @graph.get_connections('me','friendlists').first(5) # ,:fields=>"name,gender,relationship_status")
+    erb :friendlists, :layout => :ric_layout
+  end
+  
   get '/friends' do
-    #friend_list = @graph.get_connections('me','friends',:fields=>"name,gender,relationship_status")
-    set :friend_list, @graph.get_connections('me','friendlists') # ,:fields=>"name,gender,relationship_status")
     erb :'friends.html', :layout => :ric_layout
-    #erb :index, :layout => :post
-    
-    # html_page "It would be nice here to show your friends!!!<br/>
-    # Friends:<br/>
-    # <a href='/friends/123'>John - Friend 123</a><br/>
-    # <a href='/friends/456'>Alice - Friend 456</a><br/>
-    # Graphs:<br/>
-    # <a href='/graphs/palladius'>Palladius</a><br/>
-    # ", :title => 'Your Friends'
   end
   
   get '/friends/:id' do
     id = params[:id]
     @friend = Friend.find(params[:id]) rescue nil
     # using the params convention, you specified in your route
-    html_page "#{@friend.inspect}", :title => "Friend #{id} TODO"
+    html_page "#{@friend.inspect}", :title => "Friend #{id}"
   end
   
   get '/graphs/:name' do
     username = @graph.get_object(params[:name])
     friend = Friend.new( @graph , params[:name] )
-    #friend_id = friend.id
-    #my_friends = @graph.get_connections('me','friends',:fields=>"name,gender,relationship_status")
-    # #{:scope => 'publish_stream,offline_access,email,user_relationships,friends_relationships'}
     html_page "
     #{friend.img() }
+    TODO move this to '/friends/:ditto'
+    
     <h2>Friend #{friend}</h2>
     #{friend.html_name} : <br/>
     #{friend.to_html}
@@ -137,7 +136,7 @@ class RubyAndFriends < Sinatra::Application
     
     <h2>Likes</h2>
     
-    #{ @graph.get_connections(friend.fb_id, "likes").first(10).inspect }
+    #{ @graph.get_connections(friend.fb_id, "likes").first(10).map{|like| "<li>#{like.inspect}</li>"} }
     
     ", :title => "Graph for #{username['name']}"
   end
@@ -146,7 +145,6 @@ class RubyAndFriends < Sinatra::Application
     "http://www.facebook.com/#{id}"
   end
   
-  # TODO in ERB: _friend.erb
   def friend_partial(friend_hash)
     set :graph, @graph
     set :friend_hash, friend_hash

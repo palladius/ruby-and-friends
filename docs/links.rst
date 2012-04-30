@@ -5,6 +5,7 @@ SINATRA
 -------
 
 * http://sinatra-book.gittr.com/
+* http://www.sinatrarb.com/intro
 
 KOALA
 -----
