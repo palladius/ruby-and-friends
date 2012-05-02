@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Sinatra Riccardo: SOBENME</title>
+    <title><%= APPNAME %> on <%=self['SERVER_NAME'] rescue nil%>: SOBENME</title>
   </head>
   <body>
   <%= erb :'header.html' %>
@@ -9,5 +9,7 @@
     </div>
   <%= erb :'footer.html' %>
   <font color='red'>[RicLayout]</font>
+  <hr/><h2>DEBUG</h2>:
+  <%= tt(self.class) rescue "Err: #{$!}"%>
   </body>
 </html>

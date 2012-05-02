@@ -8,8 +8,10 @@ require 'socket'
 require 'action_view' #  action_view/helpers/text_helper.rb
 
 # register your app at facebook to get those infos
-require APP_ROOT + '/lib/my_facebook_app_conf.rb' # configuration for your app
-require APP_ROOT + '/lib/friend.rb'          # Facebook friend definition
+require APP_ROOT + '/conf/my_facebook_app_conf.rb' # configuration for your app
+require APP_ROOT + '/lib/friend.rb'                # Facebook friend definition
+require APP_ROOT + '/lib/html_helper.rb'           # Helper functions
+
 
 =begin
   Docs:
@@ -28,9 +30,13 @@ class RubyAndFriends < Sinatra::Application
   set    :root, APP_ROOT
   enable :sessions
 
+  def tt(str)
+    "<tt>#{str}</tt>"
+  end
+  
+  # used in various places
   def get_username(graph)
-   #:TODO #graph.inspect rescue :boh
-   graph.get_object("me")['name'] # Riccardo Carlesso
+    graph.get_object('me')['name']
   end
 
   def log_info()
@@ -43,9 +49,8 @@ class RubyAndFriends < Sinatra::Application
       # publish to your wall (if you have the permissions)
       #@graph.put_wall_post("I'm posting from my new cool app!")
       # or publish to someone else (if you have the permissions too ;) )
-
-      html_page('You just logged in as <tt>'+ escape_once(get_username(@graph)) +'</tt>!' +
-      "<img src='#{ @graph.get_picture('fabiomattei') }' height='30' />" +
+      html_page('You are '+ tt(h( get_username @graph ))+'.' +
+      "<img src='#{ @graph.get_picture('me') }' height='30' />" +
       "<a href=\"/logout\">Logout</a> <BR/>
       :")
     else
