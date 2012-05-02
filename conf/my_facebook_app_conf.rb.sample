@@ -9,7 +9,7 @@
 APP_ID   = 12345678901234567890               # Localhost3000 Riccardo
 APP_CODE = 'abcdef1234567890abcdef1234567890' # your app code
 SITE_URL = 'http://localhost:9393/'           # your app site url, can be localhost:3000. shotgun defaults to port 9393
-APPNAME  = "Your app name goes here"
+APPNAME  = "Your app name goes here"          # change this to match your app name, i.e. "I think riccardo is great"
 
 # You dont have to have it. If you do, you can see more stuff, depending on what you enabled with this token.
 # PS. Im not so sure, maybe the token is just gotten from login. Sure you can have a strong or weak token,

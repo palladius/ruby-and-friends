@@ -56,8 +56,7 @@ class Friend
   end
   
   def img(opts={})
-    height=opts.fetch :height, 100
-    "<img src='#{get_picture}' height='#{height}' />"
+    "<img src='#{get_picture}' height='#{opts.fetch( :height, 100)}' />"
   end
   
   def to_html

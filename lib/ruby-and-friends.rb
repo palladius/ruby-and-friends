@@ -27,22 +27,22 @@ class RubyAndFriends < Sinatra::Application
   include ActionView::Helpers::TagHelper
   include ActionView::Helpers::FormHelper
   
+  # cut n paster by graphs APIs :)
+  GraphActions = %w{ accounts activities adaccounts albums apprequests
+    books checkins events family feed friendlists friendrequests friends games groups home inbox interests likes links 
+    movies music mutualfriends notes notifications outbox
+    payments permissions photos picture posts scores statuses
+    tagged television updates videos
+  }
+  
   set    :root, APP_ROOT
   enable :sessions
 
-  def tt(str)
-    "<tt>#{str}</tt>"
-  end
-  
   # used in various places
   def get_username(graph)
     graph.get_object('me')['name']
   end
 
-  def log_info()
-    "#{ENV['USER']}@#{Socket.gethostname}"
-  end
-  
   get '/' do
     if session['access_token']
       # for example:
@@ -56,15 +56,6 @@ class RubyAndFriends < Sinatra::Application
     else
       html_page '<a href="/login">Login</a>'
     end
-  end
-
-  def fb_link_for(id,msg=nil)
-    msg ||= "Facebook Page of #{id}"
-    "<img src='facebook.png'><a href='https://www.facebook.com/profile.php?id=#{id}' >#{msg}</a>"
-  end
-  
-  def img(src,opts={})
-    "<img src='/images/#{src}' height='20' >"
   end
   
   def html_page(str, opts={})
@@ -122,28 +113,17 @@ class RubyAndFriends < Sinatra::Application
     html_page "#{@friend.inspect}", :title => "Friend #{id}"
   end
   
+  get '/graphs/:id/:action' do
+    # possible actions: 'members, pictures, ...'
+    friend = @graph.get_object(params[:id])
+    html_page "#{@friend.inspect}", :title => "Friend #{id} action #{ params[:action]}"
+  end
+  
   get '/graphs/:name' do
     username = @graph.get_object(params[:name])
     friend = Friend.new( @graph , params[:name] )
-    html_page "
-    #{friend.img() }
-    TODO move this to '/friends/:ditto'
-    
-    <h2>Friend #{friend}</h2>
-    #{friend.html_name} : <br/>
-    #{friend.to_html}
-    <h2>Mutual friends for #{friend.fb_id}</h2>
-    
-    #{ @graph.get_connections("me", "mutualfriends/#{friend.fb_id}").first(10).map{|hash| 
-      friend_partial(hash) # .inspect 
-      }.join(' ') 
-    }
-    
-    <h2>Likes</h2>
-    
-    #{ @graph.get_connections(friend.fb_id, "likes").first(10).map{|like| "<li>#{like.inspect}</li>"} }
-    
-    ", :title => "Graph for #{username['name']}"
+    #set :friend, friend
+    return erb :graphs, :layout => :ric_layout, :locals => {:friend => friend }
   end
   
   def fblink(id)

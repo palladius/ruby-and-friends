@@ -1,0 +1,26 @@
+<h2>GRAPHS FOR <%= friend %></H2>
+<table border='0'>
+<tr>
+	<td class='big_left'>
+		<h2>Friend <%=friend%></h2>
+		<%=friend.html_name %> : <br/>
+		<%=friend.to_html %>
+		
+		<h2>Mutual friends for <%=friend.fb_id%></h2>
+		<%= @graph.get_connections("me", "mutualfriends/#{friend.fb_id}").first(10).map{|hash| friend_partial(hash) }.join(' ') %>
+
+		<h2>Likes</h2>
+		<%= @graph.get_connections(friend.fb_id, "likes").first(10).map{|like| li(erb :_like, :locals => {:like => like }) } %>
+
+	</td>
+	<td class='big_right'>
+		<%= friend.img() %>
+			
+		Links
+		<% GraphActions.each do |action| %>
+			<li><%= link_to action, "/graphs/#{friend.fb_id}/#{action}" %>
+		<% end %>
+
+</td>
+</tr>
+</table>
