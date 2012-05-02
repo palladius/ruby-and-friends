@@ -1,0 +1,12 @@
+<h1>Generic Graph Action</h1>
+<h2><%= title %></h2>
+
+FBID = <%= fbid %>
+<h2>action-specific-template for <%= action %></h2>
+
+<%= erb( "friends_actions/#{action}".to_sym , :locals => { :json => json } ) %>
+
+Jason: 
+<p>
+  <tt style="white-spacere-wrap"><%= json.inspect %></tt>
+</p>

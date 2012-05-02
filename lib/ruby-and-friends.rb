@@ -114,9 +114,18 @@ class RubyAndFriends < Sinatra::Application
   end
   
   get '/graphs/:id/:action' do
-    # possible actions: 'members, pictures, ...'
-    friend = @graph.get_object(params[:id])
-    html_page "#{@friend.inspect}", :title => "Friend #{id} action #{ params[:action]}"
+    # possible actions: 'members, picture, photos, ...'
+    #action_jason = @graph.get_object(params[:id])
+    generic_graph = @graph.get_connections(params[:id], params[:action])
+    #html_page "#{@friend.inspect}", :title => "Friend #{id} action: #{ params[:action]}"
+    erb :graph_action, 
+      :layout => :ric_layout, 
+      :locals => { 
+        :json => generic_graph , 
+        :title => "Friend #{id} action: #{ params[:action]}",
+        :action => params[:action], 
+        :fbid   => params[:id] 
+      }
   end
   
   get '/graphs/:name' do
