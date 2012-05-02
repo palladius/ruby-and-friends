@@ -5,10 +5,11 @@ See the Koala Docs for more.
 INSTALL
 -------
 
-* run `bundle` for gems and stuff
-* `cp conf/my_facebook_app_conf.rb.sample conf/my_facebook_app_conf.rb`
-* Edit `conf/my_facebook_app_conf.rb` with your own APP_ID, APP_CODE (get this from facebook by registering an app)
-* `shotgun -p 3000` # Start your Server with shotgun: 
+	run `bundle` for installing gems and stuff
+	`cp conf/my_facebook_app_conf.rb.sample conf/my_facebook_app_conf.rb`
+	Edit `conf/my_facebook_app_conf.rb` (see comments in file)
+	`shotgun -p 3000` # Start your Server with shotgun: 
+
 
 THANKS
 ------

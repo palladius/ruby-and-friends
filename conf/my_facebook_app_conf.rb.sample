@@ -1,17 +1,25 @@
 
-# Configuration Riccardo
- # Localhost3000
-APP_ID   = 125754150824335 # Localhost3000 Riccardo
-APP_CODE = 'abb0272644d4bef5577b07e72a958784' # your app code
-SITE_URL = 'http://localhost:3000/' # your app site url
-APPNAME  = "Riccardo Facebook test"
+##########################################
+# Configuration File
+#
+# to use this application, you need to register an app on Facebook.
+# Then, add your own APP_ID, APP_CODE (get this from facebook by registering an app)
+##########################################
+
+APP_ID   = 12345678901234567890               # Localhost3000 Riccardo
+APP_CODE = 'abcdef1234567890abcdef1234567890' # your app code
+SITE_URL = 'http://localhost:9393/'           # your app site url, can be localhost:3000. shotgun defaults to port 9393
+APPNAME  = "Your app name goes here"
+
 # You dont have to have it. If you do, you can see more stuff, depending on what you enabled with this token.
+# PS. Im not so sure, maybe the token is just gotten from login. Sure you can have a strong or weak token,
+# depending on how many powers you enabled on your app and the rights you associated with it. Also GRAPHS app
+# from facebook is a good place to test your Facebook URIs to retrieve jason info of your friends. Play with it!
 SUPER_TOKEN = nil
 
-TEST_FRIEND_ID   = '100000419195371'      # Chiara Gennari
-TEST_FRIEND_NAME = 'Chiara G.'
+TEST_FRIEND_ID   = '1234567890123'      # ID of your friend
+TEST_FRIEND_NAME = 'My friend John'     # His/her name
 
-# Todo in DB
-# Usernames and/or IDs
-FAVORITE_FRIENDS = %w{ palladius chiara.tixi palladiusbonton 100001944695578 100001660682488}
+# Usernames or IDs of your best friends
+FAVORITE_FRIENDS = %w{ john.doe your.mum your.girlfriend 12345678901 12345678902 }
 
