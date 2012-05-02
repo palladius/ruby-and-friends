@@ -1,6 +1,17 @@
-<h2>PICS of <%= friend_id rescue :ERROR %></h2>
+<h2>PICS of <%= fbid %></h2>
 
 
-<% json.each do |pic| %>
-	<%= pic.inspect %>
+<% json.each do |el| %>
+  <h5>Element</h5>
+  <img src='<%= (el['icon']) %>' />
+  <img src='<%= (el['source']) %>' />
+<!--
+	<% el.each do |k,val| %>
+	  <li>
+		<b><%= k %></b>: <%= val.inspect %>
+	  </li>
+	<% end %>
+	-->
 <% end %>
+
+http://localhost:3000/images/https://s-static.ak.facebook.com/rsrc.php/v1/yz/r/StEh3RhPvjk.gif

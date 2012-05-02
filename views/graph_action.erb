@@ -4,7 +4,7 @@
 FBID = <%= fbid %>
 <h2>action-specific-template for <%= action %></h2>
 
-<%= erb( "friends_actions/#{action}".to_sym , :locals => { :json => json } ) %>
+<%= erb( "friend_actions/#{action}".to_sym , :locals => { :json => json , :fbid => fbid} ) %>
 
 Jason: 
 <p>
