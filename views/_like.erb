@@ -1,2 +1,9 @@
 <%=img('like.png', :height => 15)%>
-<%= like.inspect %>
+<b>
+	<a href='http://www.facebook.com/<%= like['id'] %>' target='_blank' >
+		<%= like['name'] %></b> ( <%= like['category']%>)
+	</a>
+</b>
+<small>
+	<%= like.inspect %>
+</small>

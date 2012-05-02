@@ -1,7 +1,7 @@
 <h2>GRAPHS FOR <%= friend %></H2>
 <table border='0'>
 <tr>
-	<td class='big_left'>
+	<td class='big_left' valign='top' >
 		<h2>Friend <%=friend%></h2>
 		<%=friend.html_name %> : <br/>
 		<%=friend.to_html %>
@@ -13,7 +13,7 @@
 		<%= @graph.get_connections(friend.fb_id, "likes").first(10).map{|like| li(erb :_like, :locals => {:like => like }) } %>
 
 	</td>
-	<td class='big_right'>
+	<td class='big_right' valign='top' >
 		<%= friend.img() %>
 			
 		Links
