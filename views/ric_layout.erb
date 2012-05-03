@@ -1,6 +1,19 @@
 <html>
   <head>
     <title><%= APPNAME %> on <%=self['SERVER_NAME'] rescue nil%>: SOBENME</title>
+	  <%#= link :href => '/css/style.css', :rel => 'stylesheet', :type => 'text/css' %>
+	  <style>
+  	  <%= scss :ric_dynamic, :style => :expanded %>
+	   </style>
+		<link rel="stylesheet" type="text/css" href="/css/riccardo.css" />
+		<style> 
+		    <!--
+			p { color:#009900; 
+				font-family:"comic sans ms",sans-serif; }
+			h1 { color:#660000; font-size:12pt; }
+		    -->
+		   </style>
+		
   </head>
   <body>
   <%= erb :'header.html' %>
