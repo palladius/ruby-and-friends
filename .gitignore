@@ -1,2 +1,3 @@
 conf/my_facebook_app_conf.rb
+*.touch
 .sass-cache/
